@@ -1,16 +1,25 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 )
 
-func main() {
-	if len(os.Args) != 3 {
-		fmt.Println("Specify 2 strings you want to compare.")
-		os.Exit(1)
+var help = `Usage of ./strcmp:
+  strcmp STRING1 STRING2
+`
+
+func run() int {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, help)
 	}
-	var result = (os.Args[1] == os.Args[2])
+	flag.Parse()
+	if flag.NArg() != 2 {
+		flag.Usage()
+		return 2
+	}
+	var result = (flag.Args()[0] == flag.Args()[1])
 	var color = 31
 	var answer = "False"
 	if result {
@@ -18,5 +27,9 @@ func main() {
 		answer = "True"
 	}
 	fmt.Printf("\033[%d;1m%s\033[0m\n", color, answer)
-	os.Exit(0)
+	return 0
+}
+
+func main() {
+	os.Exit(run())
 }
